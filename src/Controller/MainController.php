@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MainController extends AbstractController
 {
@@ -115,5 +116,13 @@ class MainController extends AbstractController
         return $this->render('main/details.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+    #[Route('/delete/{id}', name: 'app_delete')] //this needs to be modified as others
+    public function deleteBlog(Blog $blog, EntityManagerInterface $em): RedirectResponse
+    {
+        $em->remove($blog);
+        $em->flush();
+        
+        return $this->redirectToRoute('app_main');
     }
 }
