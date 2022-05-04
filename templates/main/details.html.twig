@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+	<style>
+		.align-center {
+			margin: 0 auto;
+		}
+	</style>
+{% endblock %}
+{% block body %}
+	<div class="row">
+		<div class="col-lg-8 align-center">
+			<h1>Details</h1>
+
+			{% for label, messages in app.flashes %}
+				{% for message in messages %}
+					<div class="flash-{{ label }}">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endfor %}
+
+			{{ form_start(form) }}
+
+			{{ form_widget(form) }}
+			<button type="submit" class="btn btn-outline-dark mt-3">
+				Submit Post
+			</button>
+			<a href="/" type="button" class="btn btn-outline-dark mt-3">
+				Cancel
+			</a>
+
+			{{ form_end(form) }}
+
+		</div>
+
+
+	</div>
+
+{% endblock %}
