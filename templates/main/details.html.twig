@@ -11,14 +11,6 @@
 		<div class="col-lg-8 align-center">
 			<h1>Details</h1>
 
-			{% for label, messages in app.flashes %}
-				{% for message in messages %}
-					<div class="flash-{{ label }}">
-						{{ message }}
-					</div>
-				{% endfor %}
-			{% endfor %}
-
 			{{ form_start(form) }}
 
 			{{ form_widget(form) }}

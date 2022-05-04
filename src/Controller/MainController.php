@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class MainController extends AbstractController
 {
@@ -35,6 +36,8 @@ class MainController extends AbstractController
             'blogs' => $blogs,
         ]);
     }
+
+
     #[Route('/create', name: 'app_create')]
     public function create(Request $request): Response
     {
@@ -63,19 +66,54 @@ class MainController extends AbstractController
                 $blog->setImage($newFilename);
             }
 
-
             $newBlog = $form->getData();
             $this->em->persist($newBlog);
             $this->em->flush();
-            $this->addFlash('success', 'Blog was created!');
-
+           
             return $this->redirectToRoute('app_main');
         }
 
-
-
         return $this->render('main/details.html.twig', [
             'form' => $form->createView()
+        ]);
+    }
+
+
+    #[Route('/edit/{id}', name: 'app_edit')] //this needs to be modified as others
+    public function editBlog(Blog $blog, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+        $blog->setImage(new File(sprintf('%s/%s', $this->getParameter('image_directory'), $blog->getImage())));
+        $form = $this->createForm(BlogFormType::class, $blog);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $blog      = $form->getData();
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename  = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('image_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Image cannot be saved.');
+                }
+                $blog->setImage($newFilename);
+            }
+
+            $entityManager->persist($blog);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_main');
+            
+        }
+
+        return $this->render('main/details.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }
