@@ -10,7 +10,10 @@
 	<div class="row">
 		<div class="col-lg-8 align-center">
 			<h1>Blogs</h1>
+            
+			{# {{app.user.email}} #}
 			<a href="/create" type="button" class="btn btn-outline-dark mb-3">Create New Blog</a>
+			<a href="/{{app.user ? 'logout': 'login'}}" type="button" class="btn btn-outline-dark mb-3">{{app.user ? 'Logout': 'Login'}}</a>
 			<table class="table table-striped ">
 				<thead class="thead-dark">
 
