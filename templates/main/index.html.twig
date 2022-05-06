@@ -11,7 +11,17 @@
 		<div class="col-lg-8 align-center">
 			<h1>Blogs</h1>
 
-			{# {{dump(app.user.roles)}} #}
+			{# {{dump(app.user.roles[0])}} 
+															 {{app.user.roles[0]}}  #}
+
+			<a href="/register" type="button" class="btn btn-outline-dark mb-3">Register</a>
+
+
+			{% if app.user %}
+				{% if app.user.roles[0] == 'ROLE_ADMIN' %}
+					<a href="/admin" type="button" class="btn btn-outline-dark mb-3">Go to Admin page</a>
+				{% endif %}
+			{% endif %}
 			{% if app.user %}
 				<a href="/create" type="button" class="btn btn-outline-dark mb-3">Create New Blog</a>
 			{% endif %}

@@ -81,6 +81,8 @@ class Webuser implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPassword(string $password): self
     {
+        //dd($_POST);
+        //$password = password_hash($password);
         $this->password = $password;
 
         return $this;
