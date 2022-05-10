@@ -32,17 +32,10 @@ class WebuserCrudController extends AbstractCrudController
         $this->userPasswordHasherInterface = $userPasswordHasherInterface;
     }
 
-
-
     public static function getEntityFqcn(): string
     {
         return Webuser::class;
     }
-
-
-
-
-
 
     public function configureFields(string $pageName): iterable
     {
