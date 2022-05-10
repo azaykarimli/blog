@@ -16,25 +16,32 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+
+
 
 class WebuserCrudController extends AbstractCrudController
 {
+
+    public $userPasswordHasherInterface;
+    public function __construct(UserPasswordHasherInterface $userPasswordHasherInterface, EntityManagerInterface $entityManager)
+    {
+        $this->userPasswordHasherInterface = $userPasswordHasherInterface;
+    }
+
+
+
     public static function getEntityFqcn(): string
     {
-        dd($_POST["Webuser"]["password"]);
-        dd($_POST["password"]);
-        $user = Webuser();
-
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $form->get('plainPassword')->getData()
-            )
-        );
         return Webuser::class;
     }
 
-    
+
+
+
 
 
     public function configureFields(string $pageName): iterable
@@ -59,4 +66,30 @@ class WebuserCrudController extends AbstractCrudController
         ];
         */
     }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        $this->encodePassword($entityInstance);
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        $this->encodePassword($entityInstance);
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function encodePassword(Webuser $user)
+    {
+        if ($user->getPassword() !== null) {
+            $user->setPassword(
+                $this->userPasswordHasherInterface->hashPassword(
+                    $user,
+                    $user->getPassword()
+                )
+            );
+        }
+    }
+
+
 }
